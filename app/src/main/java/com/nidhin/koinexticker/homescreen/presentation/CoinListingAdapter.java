@@ -64,16 +64,17 @@ public class CoinListingAdapter extends RecyclerView
                     coin.getCurrencyFullForm()));
             Double percentChange = Double.valueOf(coin.getPerChange());
             vh.tvPercentChange.setText(Utils.twoDecimalPlaces(percentChange) + "%");
-            vh.tvPercentChange.setTextColor(percentChange > 0 ? Color.GREEN : percentChange == 0 ? Color.WHITE : Color.RED);
+            vh.tvPercentChange.setTextColor(percentChange > 0 ? mContext.getResources().getColor(R.color.green)
+                    : percentChange == 0 ? Color.WHITE : mContext.getResources().getColor(R.color.red));
             vh.tvPercentChange.setCompoundDrawablesWithIntrinsicBounds(null, null, mContext.getResources().getDrawable(
                     percentChange > 0 ? R.drawable.ic_arrow_upward : percentChange == 0 ? R.drawable.ic_arrow_right : R.drawable.ic_arrow_downward), null);
             vh.tvLastTraded.setText((coin.getBaseCurrency().equalsIgnoreCase("inr") ? "\u20B9" : "$")
                     + Utils.formatAmount(Double.valueOf(coin.getLastTradedPrice())));
             Pair pairOne = Pair.create(vh.tvCoinFullForm, ViewCompat.getTransitionName(vh.tvCoinFullForm));
             Pair pairTwo = Pair.create(vh.tvLastTraded, ViewCompat.getTransitionName(vh.tvLastTraded));
-            Pair pairThree= Pair.create(vh.tvPercentChange, ViewCompat.getTransitionName(vh.tvPercentChange));
+            Pair pairThree = Pair.create(vh.tvPercentChange, ViewCompat.getTransitionName(vh.tvPercentChange));
 
-            vh.cardView.setOnClickListener(view -> mCoinsInterface.onCoinClicked(coin,pairOne,pairTwo,pairThree));
+            vh.cardView.setOnClickListener(view -> mCoinsInterface.onCoinClicked(coin, pairOne, pairTwo, pairThree));
         } catch (Exception e) {
             e.printStackTrace();
         }
