@@ -24,13 +24,13 @@ public class ApiManager {
 
 
     public Single<JSONObject> ticker() {
-        if (BuildConfig.DEBUG)
-            try {
-                return Single.just(new JSONObject(mockResponse));
-            } catch (Exception e) {
-                return Single.error(e);
-            }
-        else
+//        if (BuildConfig.DEBUG)
+//            try {
+//                return Single.just(new JSONObject(mockResponse));
+//            } catch (Exception e) {
+//                return Single.error(e);
+//            }
+//        else
             return Single.create(e -> {
                 final SingleEmitter emitter = e;
                 service.ticker().enqueue(new Callback<String>() {

@@ -67,10 +67,26 @@ public class MainActivity extends DaggerAppCompatActivity implements CoinListing
         viewModel.getToast().observe(this, this::showToast);
         tvHeader.setVisibility(View.VISIBLE);
 
+        mTabLayout.addOnTabSelectedListener(new TabLayout.BaseOnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewModel.setBaseCurrency(String.valueOf(tab.getTag()));
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
     }
 
     private void showToast(String toast) {
-        Utils.makeToast(this,toast);
+        Utils.makeToast(this, toast);
     }
 
 
@@ -92,22 +108,6 @@ public class MainActivity extends DaggerAppCompatActivity implements CoinListing
             tab.setText(Utils.formatStringToDisplay(base));
             mTabLayout.addTab(tab);
         }
-        mTabLayout.addOnTabSelectedListener(new TabLayout.BaseOnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewModel.setBaseCurrency(String.valueOf(tab.getTag()));
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
     }
 
     @Override

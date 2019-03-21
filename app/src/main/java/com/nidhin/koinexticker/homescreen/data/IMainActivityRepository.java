@@ -33,7 +33,7 @@ public class IMainActivityRepository implements MainActivityRepository {
 
     @Override
     public Single<List<CoinDetails>> ticker() {
-        if (getLastCheckedAt() > 180 && mSharedPrefsManager.hasKey("prices")) {
+        if (getLastCheckedAt() < 60 && mSharedPrefsManager.hasKey("prices")) {
             try {
                 return Single.just(populateList(new JSONObject(mSharedPrefsManager.getString("prices"))));
             } catch (JSONException e) {
@@ -43,6 +43,7 @@ public class IMainActivityRepository implements MainActivityRepository {
             return mApiManager.ticker().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                     .flatMap(jsonObject -> {
 
+                        mSharedPrefsManager.putLongValue("lastCheckedAt", Calendar.getInstance().getTimeInMillis());
                         mSharedPrefsManager.putStringValue("prices", jsonObject.toString());
                         return Single.just(populateList(jsonObject));
                     }).subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread());
@@ -55,7 +56,6 @@ public class IMainActivityRepository implements MainActivityRepository {
         List<CoinDetails> coinDetailsList = new ArrayList<>();
         JSONObject statsObject = jsonObject.getJSONObject("stats");
         Iterator<String> baseCurrencyKeys = statsObject.keys();
-        mSharedPrefsManager.putLongValue("lastCheckedAt", Calendar.getInstance().getTimeInMillis());
         CoinDetails coinDetails;
         while (baseCurrencyKeys.hasNext()) {
             coinDetails = new CoinDetails();

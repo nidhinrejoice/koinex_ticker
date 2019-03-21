@@ -85,8 +85,11 @@ public class MainViewModel extends ViewModel {
                 for (CoinDetails coinDetails : priceList) {
                     baseCurrencyList.add((coinDetails.getBaseCurrency()));
                 }
-                mBaseCurrencies.setValue(baseCurrencyList);
-                sort();
+                if (Utils.isNotStringEmpty(mBaseCurrency)) {
+                    setBaseCurrency(mBaseCurrency);
+                } else
+                    mBaseCurrencies.setValue(baseCurrencyList);
+                onResume();
             }
 
             @Override
@@ -94,6 +97,7 @@ public class MainViewModel extends ViewModel {
                 priceList = new ArrayList<>();
                 pDialog.setValue("");
                 toast.setValue(Utils.getException(e));
+                onResume();
             }
         }, null);
     }
@@ -117,7 +121,7 @@ public class MainViewModel extends ViewModel {
 
         mBaseCurrency = baseCurrency;
         for (CoinDetails coinDetails : priceList) {
-            if (coinDetails.getBaseCurrency().equalsIgnoreCase(baseCurrency)) {
+            if (coinDetails.getBaseCurrency().equalsIgnoreCase(mBaseCurrency)) {
                 coinList = coinDetails.getCoinList();
                 break;
             }
@@ -130,7 +134,7 @@ public class MainViewModel extends ViewModel {
         mCheckLastCheckedAt.execute(new DisposableSingleObserver<Long>() {
             @Override
             public void onSuccess(Long value) {
-                if (value > 180)
+                if (value > 60)
                     value = 0L;
                 timerSubscription = new CompositeDisposable();
                 Long finalValue = value;
@@ -138,10 +142,11 @@ public class MainViewModel extends ViewModel {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(aLong -> {
                             aLong = aLong + finalValue;
-                            if (aLong % 180 == 0 || priceList == null) {
+                            if (aLong % 60 == 0 || priceList == null) {
                                 header.setValue("Fetching latest price...");
                                 getLatestPrices();
-                            } else header.setValue("Refreshing in " + aLong % 180 + " seconds");
+                                onPause();
+                            } else header.setValue("Refreshing in " + aLong % 60 + " seconds");
                         }));
             }
 

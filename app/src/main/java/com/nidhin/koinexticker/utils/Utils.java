@@ -106,15 +106,15 @@ public class Utils {
             else if (t instanceof ConnectException)
                 return "Internet not available";
             else if (t instanceof SocketTimeoutException)
-                return "Your request has been timed out";
+                return "Internet not available";
             else if (t instanceof TimeoutException)
-                return "Your request has been timed out";
+                return "Internet not available";
             else if (t instanceof NullPointerException)
                 return "Something went wrong";
             else if (t instanceof JSONException)
                 return "Something went wrong";
             else if (t instanceof SocketException)
-                return "Network not available";
+                return "Internet not available";
             else
                 return t.getMessage();
         } else
