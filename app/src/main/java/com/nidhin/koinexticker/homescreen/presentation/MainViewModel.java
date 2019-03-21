@@ -100,7 +100,7 @@ public class MainViewModel extends ViewModel {
                 priceList = new ArrayList<>();
                 pDialog.setValue("");
                 toast.setValue(Utils.getException(e));
-               error.setValue(true);
+                error.setValue(true);
             }
         }, null);
     }
@@ -149,7 +149,8 @@ public class MainViewModel extends ViewModel {
                                 header.setValue("Fetching latest price...");
                                 getLatestPrices();
                                 onPause();
-                            } else header.setValue("Refreshing in " + aLong % 60 + " seconds");
+                            } else
+                                header.setValue("Refreshing in " + (60 - (aLong % 60)) + " seconds");
                         }));
             }
 

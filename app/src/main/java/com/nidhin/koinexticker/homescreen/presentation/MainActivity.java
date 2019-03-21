@@ -105,7 +105,7 @@ public class MainActivity extends DaggerAppCompatActivity implements CoinListing
     }
 
     private void setSortBy(Boolean sortBy) {
-        tvSort.setCompoundDrawablesWithIntrinsicBounds(null, null, getDrawable(sortBy ? R.drawable.ic_sort_by_alpha : R.drawable.ic_sort_price), null);
+        tvSort.setCompoundDrawablesWithIntrinsicBounds(null, null, getDrawable(sortBy ? R.drawable.ic_sort_price : R.drawable.ic_sort_by_alpha), null);
     }
 
     void setTabs(List<String> baseCurrencies) {
