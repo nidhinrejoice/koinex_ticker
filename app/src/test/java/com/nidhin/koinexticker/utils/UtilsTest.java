@@ -1,5 +1,7 @@
 package com.nidhin.koinexticker.utils;
 
+import com.nidhin.koinexticker.homescreen.data.Coin;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,5 +31,13 @@ public class UtilsTest {
     public void formatStringToDisplay() {
         String s = "hello_world";
         assertEquals("Hello World", Utils.formatStringToDisplay(s));
+    }
+    @Test
+    public void testSpread() {
+        Coin coin=new Coin();
+        coin.setLastTradedPrice("200.0");
+        coin.setLowestAsk("200.0");
+        coin.setHighestBid("189.0");
+        assertEquals("5.5", Utils.calculateSpread(coin));
     }
 }
