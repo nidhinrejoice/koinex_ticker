@@ -79,8 +79,8 @@ public class Utils {
     public static String formatAmount(double amount) {
         DecimalFormat df = new DecimalFormat("#,##,##,###.#");
         df.setRoundingMode(RoundingMode.HALF_UP);
-        df.setMaximumFractionDigits(2);
-
+        df.setMinimumFractionDigits(2);
+        df.setMaximumFractionDigits(4);
         return df.format(amount);
     }
 
