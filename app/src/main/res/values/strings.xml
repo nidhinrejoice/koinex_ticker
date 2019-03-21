@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Koinex Ticker</string>
+    <string name="last_24_hours">Last 24 Hours</string>
 </resources>

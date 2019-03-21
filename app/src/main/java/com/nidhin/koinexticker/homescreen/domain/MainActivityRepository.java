@@ -9,5 +9,6 @@ import io.reactivex.Single;
 public interface MainActivityRepository {
 
     Single<List<CoinDetails>> ticker();
+    Long getLastCheckedAt();
 
 }

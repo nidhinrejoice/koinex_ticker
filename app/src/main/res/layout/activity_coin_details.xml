@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="3dp"
+    tools:context=".coindetails.presentation.CoinDetailsActivity">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/toolbarLayout"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/go_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_left_arrow" />
+
+
+        <TextView
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:textColor="@color/textColorSecondary"
+            android:textSize="20sp"
+            android:transitionName="name"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/go_back"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:padding="5dp"
+        android:text="LAST TRADED AT"
+        android:textAppearance="@style/TextAppearance.FontBold"
+        android:textColor="@color/textColorSecondary"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbarLayout" />
+
+    <TextView
+        android:id="@+id/last_traded"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:textAppearance="@style/TextAppearance.FontBold"
+        android:textColor="@color/textColorSecondary"
+        android:textSize="20sp"
+        android:transitionName="last_traded"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbarLayout" />
+
+    <TextView
+        android:id="@+id/askLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="5dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="Ask"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textColor="@color/textColorPrimaryInverse"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/last_traded" />
+
+    <TextView
+        android:id="@+id/ask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="5dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/textColorSecondary"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/askLabel" />
+
+    <TextView
+        android:id="@+id/bidLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="5dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="Bid"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textColor="@color/textColorPrimaryInverse"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/last_traded" />
+
+    <TextView
+        android:id="@+id/bid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="5dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/textColorSecondary"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bidLabel" />
+
+    <TextView
+        android:id="@+id/spread"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="5dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:textAppearance="@style/TextAppearance.FontBold"
+        android:textColor="@color/textColorPrimaryInverse"
+        android:textSize="22sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bid" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/last_day_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@color/cardBackground"
+        android:minHeight="100dp"
+        android:padding="5dp"
+        app:layout_constraintTop_toBottomOf="@id/spread">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="@string/last_24_hours"
+            android:textColor="@color/white"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/percent_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="5dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/textColorSecondary"
+            android:transitionName="percent_change"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/lowLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="5dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="Low"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/textColorPrimaryInverse"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title" />
+
+        <TextView
+            android:id="@+id/low"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="5dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/textColorSecondary"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lowLabel" />
+
+        <TextView
+            android:id="@+id/highLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="5dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="High"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/textColorPrimaryInverse"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title" />
+
+        <TextView
+            android:id="@+id/high"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="5dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/textColorSecondary"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/highLabel" />
+
+        <TextView
+            android:id="@+id/volumeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="Vol:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/textColorPrimaryInverse"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/low" />
+
+        <TextView
+            android:id="@+id/volume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/textColorSecondary"
+            app:layout_constraintLeft_toRightOf="@id/volumeLabel"
+            app:layout_constraintTop_toBottomOf="@id/low" />
+
+        <TextView
+            android:id="@+id/tradingVolumeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="Trading Vol:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/textColorPrimaryInverse"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/volumeLabel" />
+
+        <TextView
+            android:id="@+id/tradingVolume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/textColorSecondary"
+            app:layout_constraintLeft_toRightOf="@id/tradingVolumeLabel"
+            app:layout_constraintTop_toBottomOf="@id/volumeLabel" />
+
+    </android.support.constraint.ConstraintLayout>
+
+
+</android.support.constraint.ConstraintLayout>

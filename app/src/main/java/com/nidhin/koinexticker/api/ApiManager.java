@@ -5,6 +5,8 @@ import com.nidhin.koinexticker.BuildConfig;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.ConnectException;
+
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
@@ -24,37 +26,640 @@ public class ApiManager {
     public Single<JSONObject> ticker() {
         if (BuildConfig.DEBUG)
             try {
-                return Single.just(new JSONObject(s));
-            } catch (JSONException e) {
+                return Single.just(new JSONObject(mockResponse));
+            } catch (Exception e) {
                 return Single.error(e);
             }
         else
-            return Single.create(new SingleOnSubscribe<JSONObject>() {
-                @Override
-                public void subscribe(final SingleEmitter<JSONObject> e) throws Exception {
-                    final SingleEmitter emitter = e;
-                    service.ticker().enqueue(new Callback<String>() {
-                        @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
-                            if (response.isSuccessful()) {
-                                try {
-                                    emitter.onSuccess(new JSONObject(response.body()));
-                                } catch (JSONException e1) {
-                                    emitter.onError(e1);
-                                }
-                            } else emitter.onError(new Exception());
-                        }
+            return Single.create(e -> {
+                final SingleEmitter emitter = e;
+                service.ticker().enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if (response.isSuccessful()) {
+                            try {
+                                emitter.onSuccess(new JSONObject(response.body()));
+                            } catch (JSONException e1) {
+                                emitter.onError(e1);
+                            }
+                        } else emitter.onError(new Exception());
+                    }
 
-                        @Override
-                        public void onFailure(Call<String> call, Throwable t) {
-                            emitter.onError(t);
-                        }
-                    });
-                }
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                        emitter.onError(t);
+                    }
+                });
             });
 
     }
 
-    String s = "{\"prices\":{\"inr\":{\"ETH\":\"9700\",\"BTC\":\"283498.88\",\"LTC\":\"4229.92\",\"XRP\":\"22.25\",\"OMG\":\"103\",\"REQ\":\"1.82\",\"ZRX\":\"18.21\",\"GNT\":\"5.35\",\"BAT\":\"13.52\",\"AE\":\"31.56\",\"TRX\":\"1.61\",\"XLM\":\"8.15\",\"NEO\":\"650\",\"GAS\":\"186\",\"XRB\":\"72.88\",\"NCASH\":\"0.13\",\"EOS\":\"264.99\",\"CMT\":\"2.36\",\"ONT\":\"77.7\",\"ZIL\":\"1.28\",\"IOST\":\"0.53\",\"ACT\":\"0.77\",\"ZCO\":\"0.43\",\"SNT\":\"1.84\",\"POLY\":\"7.03\",\"ELF\":\"11.26\",\"REP\":\"1020\",\"QKC\":\"2.49\",\"XZC\":\"498\",\"BCHABC\":\"11400\",\"TUSD\":\"71.41\",\"BCHSV\":\"4610\",\"BTT\":\"0.06\"},\"true_usd\":{\"XRP\":\"0.315\",\"TRX\":\"0.0227\",\"BTC\":\"3958.9133\",\"ETH\":\"136.9884\",\"NCASH\":\"0.0019\",\"BCHABC\":\"127.88\",\"LTC\":\"61\",\"ZIL\":\"0.0178\",\"BCHSV\":\"74\",\"XLM\":\"0.106\",\"ZRX\":\"0.29\",\"BTT\":\"0.001\",\"USDT\":\"1.0042\"}},\"stats\":{\"inr\":{\"ETH\":{\"highest_bid\":\"9717\",\"lowest_ask\":\"9800\",\"last_traded_price\":\"9700\",\"min_24hrs\":\"9500.0\",\"max_24hrs\":\"9849.0\",\"vol_24hrs\":\"83.171\",\"currency_full_form\":\"ether\",\"currency_short_form\":\"ETH\",\"baseCurrency\":\"inr\",\"per_change\":\"2.1052631578947367\",\"trade_volume\":\"350361.57454000006\"},\"BTC\":{\"highest_bid\":\"283498.83\",\"lowest_ask\":\"283498.88\",\"last_traded_price\":\"283498.88\",\"min_24hrs\":\"279000.0\",\"max_24hrs\":\"283500.0\",\"vol_24hrs\":\"6.8355\",\"currency_full_form\":\"bitcoin\",\"currency_short_form\":\"BTC\",\"baseCurrency\":\"inr\",\"per_change\":\"1.2662329787667608\",\"trade_volume\":\"1276720.6345980002\"},\"LTC\":{\"highest_bid\":\"4122.1\",\"lowest_ask\":\"4229.91\",\"last_traded_price\":\"4229.92\",\"min_24hrs\":\"4000.0\",\"max_24hrs\":\"4248.73\",\"vol_24hrs\":\"126.447\",\"currency_full_form\":\"litecoin\",\"currency_short_form\":\"LTC\",\"baseCurrency\":\"inr\",\"per_change\":\"2.662977525362853\",\"trade_volume\":\"517457.46704\"},\"XRP\":{\"highest_bid\":\"22.24\",\"lowest_ask\":\"22.39\",\"last_traded_price\":\"22.25\",\"min_24hrs\":\"22.05\",\"max_24hrs\":\"22.45\",\"vol_24hrs\":\"71197.0\",\"currency_full_form\":\"ripple\",\"currency_short_form\":\"XRP\",\"baseCurrency\":\"inr\",\"per_change\":\"0.7699275362318918\",\"trade_volume\":\"1471128.5799999998\"},\"OMG\":{\"highest_bid\":\"103.54\",\"lowest_ask\":\"108.96\",\"last_traded_price\":\"103\",\"min_24hrs\":\"103.0\",\"max_24hrs\":\"103.0\",\"vol_24hrs\":\"20.0\",\"currency_full_form\":\"omisego\",\"currency_short_form\":\"OMG\",\"baseCurrency\":\"inr\",\"per_change\":\"0\",\"trade_volume\":\"2060.0\"},\"REQ\":{\"highest_bid\":\"1.82\",\"lowest_ask\":\"1.86\",\"last_traded_price\":\"1.82\",\"min_24hrs\":\"1.82\",\"max_24hrs\":\"1.86\",\"vol_24hrs\":\"3191.367\",\"currency_full_form\":\"request\",\"currency_short_form\":\"REQ\",\"baseCurrency\":\"inr\",\"per_change\":\"-1.0869565217391313\",\"trade_volume\":\"5859.681280000001\"},\"ZRX\":{\"highest_bid\":\"18.66\",\"lowest_ask\":\"18.85\",\"last_traded_price\":\"18.21\",\"min_24hrs\":\"18.19\",\"max_24hrs\":\"18.26\",\"vol_24hrs\":\"151.25\",\"currency_full_form\":\"zerox\",\"currency_short_form\":\"ZRX\",\"baseCurrency\":\"inr\",\"per_change\":\"0\",\"trade_volume\":\"2754.2625\"},\"GNT\":{\"highest_bid\":\"5.27\",\"lowest_ask\":\"5.4\",\"last_traded_price\":\"5.35\",\"min_24hrs\":\"5.25\",\"max_24hrs\":\"5.41\",\"vol_24hrs\":\"5014.827\",\"currency_full_form\":\"golem\",\"currency_short_form\":\"GNT\",\"baseCurrency\":\"inr\",\"per_change\":\"1.904761904761898\",\"trade_volume\":\"26845.7376\"},\"BAT\":{\"highest_bid\":\"13.51\",\"lowest_ask\":\"13.84\",\"last_traded_price\":\"13.52\",\"min_24hrs\":\"13.51\",\"max_24hrs\":\"13.52\",\"vol_24hrs\":\"336.169\",\"currency_full_form\":\"basic_attention_token\",\"currency_short_form\":\"BAT\",\"baseCurrency\":\"inr\",\"per_change\":\"0.07401924500369939\",\"trade_volume\":\"4542.14319\"},\"AE\":{\"highest_bid\":\"31.56\",\"lowest_ask\":\"33.96\",\"last_traded_price\":\"31.56\",\"min_24hrs\":\"31.56\",\"max_24hrs\":\"31.56\",\"vol_24hrs\":\"163.0\",\"currency_full_form\":\"aeternity\",\"currency_short_form\":\"AE\",\"baseCurrency\":\"inr\",\"per_change\":\"0\",\"trade_volume\":\"5144.28\"},\"TRX\":{\"highest_bid\":\"1.59\",\"lowest_ask\":\"1.61\",\"last_traded_price\":\"1.61\",\"min_24hrs\":\"1.59\",\"max_24hrs\":\"1.62\",\"vol_24hrs\":\"230164.0\",\"currency_full_form\":\"tron\",\"currency_short_form\":\"TRX\",\"baseCurrency\":\"inr\",\"per_change\":\"1.2578616352201268\",\"trade_volume\":\"368590.23\"},\"XLM\":{\"highest_bid\":\"8\",\"lowest_ask\":\"8.23\",\"last_traded_price\":\"8.15\",\"min_24hrs\":\"7.79\",\"max_24hrs\":\"8.48\",\"vol_24hrs\":\"24075.0\",\"currency_full_form\":\"stellar\",\"currency_short_form\":\"XLM\",\"baseCurrency\":\"inr\",\"per_change\":\"0.7416563658838133\",\"trade_volume\":\"195705.86999999994\"},\"NEO\":{\"highest_bid\":\"631.11\",\"lowest_ask\":\"655\",\"last_traded_price\":\"650\",\"min_24hrs\":\"641.01\",\"max_24hrs\":\"650.0\",\"vol_24hrs\":\"0.98\",\"currency_full_form\":\"neo\",\"currency_short_form\":\"NEO\",\"baseCurrency\":\"inr\",\"per_change\":\"1.3882389642801398\",\"trade_volume\":\"631.9445000000001\"},\"GAS\":{\"highest_bid\":\"186\",\"lowest_ask\":\"192\",\"last_traded_price\":\"186\",\"min_24hrs\":\"185.0\",\"max_24hrs\":\"190.0\",\"vol_24hrs\":\"90.337\",\"currency_full_form\":\"gas\",\"currency_short_form\":\"GAS\",\"baseCurrency\":\"inr\",\"per_change\":\"-2.1052631578947367\",\"trade_volume\":\"16962.6665\"},\"XRB\":{\"highest_bid\":\"68.03\",\"lowest_ask\":\"72.88\",\"last_traded_price\":\"72.88\",\"min_24hrs\":\"72.88\",\"max_24hrs\":\"72.88\",\"vol_24hrs\":\"10.665\",\"currency_full_form\":\"nano\",\"currency_short_form\":\"XRB\",\"baseCurrency\":\"inr\",\"per_change\":\"0\",\"trade_volume\":\"777.2651999999999\"},\"NCASH\":{\"highest_bid\":\"0.12\",\"lowest_ask\":\"0.13\",\"last_traded_price\":\"0.13\",\"min_24hrs\":\"0.12\",\"max_24hrs\":\"0.13\",\"vol_24hrs\":\"190573.4\",\"currency_full_form\":\"nucleus_vision\",\"currency_short_form\":\"NCASH\",\"baseCurrency\":\"inr\",\"per_change\":\"0\",\"trade_volume\":\"23960.533\"},\"EOS\":{\"highest_bid\":\"258.02\",\"lowest_ask\":\"264.99\",\"last_traded_price\":\"264.99\",\"min_24hrs\":\"258.0\",\"max_24hrs\":\"264.99\",\"vol_24hrs\":\"15.63\",\"currency_full_form\":\"eos\",\"currency_short_form\":\"EOS\",\"baseCurrency\":\"inr\",\"per_change\":\"1.9192307692307726\",\"trade_volume\":\"4065.1701000000003\"},\"CMT\":{\"highest_bid\":\"2.28\",\"lowest_ask\":\"2.4\",\"last_traded_price\":\"2.36\",\"min_24hrs\":\"2.3\",\"max_24hrs\":\"2.36\",\"vol_24hrs\":\"1269.0\",\"currency_full_form\":\"cyber_miles\",\"currency_short_form\":\"CMT\",\"baseCurrency\":\"inr\",\"per_change\":\"2.6086956521739157\",\"trade_volume\":\"2967.8\"},\"ONT\":{\"highest_bid\":\"74.13\",\"lowest_ask\":\"79.62\",\"last_traded_price\":\"77.7\",\"min_24hrs\":\"74.01\",\"max_24hrs\":\"79.63\",\"vol_24hrs\":\"109.532\",\"currency_full_form\":\"ontology\",\"currency_short_form\":\"ONT\",\"baseCurrency\":\"inr\",\"per_change\":\"-2.423709657164376\",\"trade_volume\":\"8644.05332\"},\"ZIL\":{\"highest_bid\":\"1.26\",\"lowest_ask\":\"1.29\",\"last_traded_price\":\"1.28\",\"min_24hrs\":\"1.25\",\"max_24hrs\":\"1.28\",\"vol_24hrs\":\"14906.0\",\"currency_full_form\":\"zilliqa\",\"currency_short_form\":\"ZIL\",\"baseCurrency\":\"inr\",\"per_change\":\"0.7874015748031503\",\"trade_volume\":\"18797.02\"},\"IOST\":{\"highest_bid\":\"0.52\",\"lowest_ask\":\"0.53\",\"last_traded_price\":\"0.53\",\"min_24hrs\":\"0.52\",\"max_24hrs\":\"0.55\",\"vol_24hrs\":\"106737.0\",\"currency_full_form\":\"ios_token\",\"currency_short_form\":\"IOST\",\"baseCurrency\":\"inr\",\"per_change\":\"-1.8518518518518534\",\"trade_volume\":\"56485.74\"},\"ACT\":{\"highest_bid\":\"0.75\",\"lowest_ask\":\"0.77\",\"last_traded_price\":\"0.77\",\"min_24hrs\":\"0.74\",\"max_24hrs\":\"0.79\",\"vol_24hrs\":\"231275.0\",\"currency_full_form\":\"achain\",\"currency_short_form\":\"ACT\",\"baseCurrency\":\"inr\",\"per_change\":\"4.054054054054058\",\"trade_volume\":\"176029.27\"},\"ZCO\":{\"highest_bid\":\"0.41\",\"lowest_ask\":\"0.43\",\"last_traded_price\":\"0.43\",\"min_24hrs\":\"0.41\",\"max_24hrs\":\"0.44\",\"vol_24hrs\":\"10502.0\",\"currency_full_form\":\"zebi\",\"currency_short_form\":\"ZCO\",\"baseCurrency\":\"inr\",\"per_change\":\"2.380952380952383\",\"trade_volume\":\"4475.289999999999\"},\"SNT\":{\"highest_bid\":\"1.53\",\"lowest_ask\":\"1.82\",\"last_traded_price\":\"1.84\",\"min_24hrs\":\"1.72\",\"max_24hrs\":\"1.84\",\"vol_24hrs\":\"965.0\",\"currency_full_form\":\"status\",\"currency_short_form\":\"SNT\",\"baseCurrency\":\"inr\",\"per_change\":\"6.976744186046518\",\"trade_volume\":\"1720.8200000000002\"},\"POLY\":{\"highest_bid\":\"7.04\",\"lowest_ask\":\"7.22\",\"last_traded_price\":\"7.03\",\"min_24hrs\":\"7.03\",\"max_24hrs\":\"7.06\",\"vol_24hrs\":\"392.0\",\"currency_full_form\":\"polymath\",\"currency_short_form\":\"POLY\",\"baseCurrency\":\"inr\",\"per_change\":\"-0.2836879432624053\",\"trade_volume\":\"2766.8499999999995\"},\"ELF\":{\"highest_bid\":\"11.27\",\"lowest_ask\":\"12.59\",\"last_traded_price\":\"11.26\",\"min_24hrs\":\"11.26\",\"max_24hrs\":\"11.26\",\"vol_24hrs\":\"92.0\",\"currency_full_form\":\"aelf\",\"currency_short_form\":\"ELF\",\"baseCurrency\":\"inr\",\"per_change\":\"0\",\"trade_volume\":\"1035.92\"},\"REP\":{\"highest_bid\":\"1010\",\"lowest_ask\":\"1044.95\",\"last_traded_price\":\"1020\",\"min_24hrs\":\"1020.0\",\"max_24hrs\":\"1020.0\",\"vol_24hrs\":\"1.0\",\"currency_full_form\":\"augur\",\"currency_short_form\":\"REP\",\"baseCurrency\":\"inr\",\"per_change\":\"0\",\"trade_volume\":\"1020.0\"},\"QKC\":{\"highest_bid\":\"2.41\",\"lowest_ask\":\"2.5\",\"last_traded_price\":\"2.49\",\"min_24hrs\":\"2.49\",\"max_24hrs\":\"2.49\",\"vol_24hrs\":\"487.0\",\"currency_full_form\":\"quarkchain\",\"currency_short_form\":\"QKC\",\"baseCurrency\":\"inr\",\"per_change\":\"0\",\"trade_volume\":\"1212.63\"},\"XZC\":{\"highest_bid\":\"466\",\"lowest_ask\":\"498\",\"last_traded_price\":\"498\",\"min_24hrs\":\"498.0\",\"max_24hrs\":\"498.0\",\"vol_24hrs\":\"13.96\",\"currency_full_form\":\"zcoin\",\"currency_short_form\":\"XZC\",\"baseCurrency\":\"inr\",\"per_change\":\"0\",\"trade_volume\":\"6952.080000000001\"},\"BCHABC\":{\"highest_bid\":\"10904\",\"lowest_ask\":\"11400\",\"last_traded_price\":\"11400\",\"min_24hrs\":\"10801.0\",\"max_24hrs\":\"11400.0\",\"vol_24hrs\":\"12.6015\",\"currency_full_form\":\"bitcoin_cash_abc\",\"currency_short_form\":\"BCHABC\",\"baseCurrency\":\"inr\",\"per_change\":\"0.8849557522123894\",\"trade_volume\":\"139773.7198\"},\"TUSD\":{\"highest_bid\":\"70.02\",\"lowest_ask\":\"71.41\",\"last_traded_price\":\"71.41\",\"min_24hrs\":\"70.0\",\"max_24hrs\":\"71.46\",\"vol_24hrs\":\"1476.76\",\"currency_full_form\":\"true_usd\",\"currency_short_form\":\"TUSD\",\"baseCurrency\":\"inr\",\"per_change\":\"0.861581920903954\",\"trade_volume\":\"104618.96290000001\"},\"BCHSV\":{\"highest_bid\":\"4610\",\"lowest_ask\":\"4800\",\"last_traded_price\":\"4610\",\"min_24hrs\":\"4610.0\",\"max_24hrs\":\"4800.0\",\"vol_24hrs\":\"4.144\",\"currency_full_form\":\"bitcoin_cash_sv\",\"currency_short_form\":\"BCHSV\",\"baseCurrency\":\"inr\",\"per_change\":\"-3.9583333333333335\",\"trade_volume\":\"19293.95\"},\"BTT\":{\"highest_bid\":\"0.05\",\"lowest_ask\":\"0.06\",\"last_traded_price\":\"0.06\",\"min_24hrs\":\"0.05\",\"max_24hrs\":\"0.06\",\"vol_24hrs\":\"617958.0\",\"currency_full_form\":\"bit_torrent\",\"currency_short_form\":\"BTT\",\"baseCurrency\":\"inr\",\"per_change\":\"0\",\"trade_volume\":\"36696.58\"}},\"true_usd\":{\"XRP\":{\"highest_bid\":\"0.3114\",\"lowest_ask\":\"0.3153\",\"last_traded_price\":\"0.315\",\"min_24hrs\":\"0.3069\",\"max_24hrs\":\"0.3167\",\"vol_24hrs\":\"14570.0\",\"currency_full_form\":\"ripple\",\"currency_short_form\":\"XRP\",\"baseCurrency\":\"true_usd\",\"per_change\":\"0.09532888465205672\",\"trade_volume\":\"4486.250999999999\"},\"TRX\":{\"highest_bid\":\"0.0223\",\"lowest_ask\":\"0.0227\",\"last_traded_price\":\"0.0227\",\"min_24hrs\":\"0.0224\",\"max_24hrs\":\"0.0228\",\"vol_24hrs\":\"127830.0\",\"currency_full_form\":\"tron\",\"currency_short_form\":\"TRX\",\"baseCurrency\":\"true_usd\",\"per_change\":\"1.3392857142857217\",\"trade_volume\":\"2881.6304000000005\"},\"BTC\":{\"highest_bid\":\"3958.9133\",\"lowest_ask\":\"4014.837\",\"last_traded_price\":\"3958.9133\",\"min_24hrs\":\"3945.973\",\"max_24hrs\":\"4028.527\",\"vol_24hrs\":\"0.906\",\"currency_full_form\":\"bitcoin\",\"currency_short_form\":\"BTC\",\"baseCurrency\":\"true_usd\",\"per_change\":\"-1.1168298145656375\",\"trade_volume\":\"3513.994421330001\"},\"ETH\":{\"highest_bid\":\"136.5255\",\"lowest_ask\":\"138.7824\",\"last_traded_price\":\"136.9884\",\"min_24hrs\":\"135.4978\",\"max_24hrs\":\"139.625\",\"vol_24hrs\":\"9.08\",\"currency_full_form\":\"ether\",\"currency_short_form\":\"ETH\",\"baseCurrency\":\"true_usd\",\"per_change\":\"-0.3612030403316731\",\"trade_volume\":\"1263.7762473\"},\"NCASH\":{\"highest_bid\":\"0.0014\",\"lowest_ask\":\"0.0019\",\"last_traded_price\":\"0.0019\",\"min_24hrs\":\"0.0019\",\"max_24hrs\":\"0.0019\",\"vol_24hrs\":\"242.0\",\"currency_full_form\":\"nucleus_vision\",\"currency_short_form\":\"NCASH\",\"baseCurrency\":\"true_usd\",\"per_change\":\"0\",\"trade_volume\":\"0.4598\"},\"BCHABC\":{\"highest_bid\":\"65\",\"lowest_ask\":\"177.88\",\"last_traded_price\":\"127.88\",\"min_24hrs\":\"127.88\",\"max_24hrs\":\"127.88\",\"vol_24hrs\":\"0.009\",\"currency_full_form\":\"bitcoin_cash_abc\",\"currency_short_form\":\"BCHABC\",\"baseCurrency\":\"true_usd\",\"per_change\":\"0\",\"trade_volume\":\"1.15092\"},\"LTC\":{\"highest_bid\":\"40.1\",\"lowest_ask\":\"65\",\"last_traded_price\":\"61\",\"min_24hrs\":\"61.0\",\"max_24hrs\":\"61.0\",\"vol_24hrs\":\"1.1\",\"currency_full_form\":\"litecoin\",\"currency_short_form\":\"LTC\",\"baseCurrency\":\"true_usd\",\"per_change\":\"0\",\"trade_volume\":\"67.1\"},\"ZIL\":{\"highest_bid\":\"0.0102\",\"lowest_ask\":\"0.0218\",\"last_traded_price\":\"0.0178\",\"min_24hrs\":\"0.0178\",\"max_24hrs\":\"0.0178\",\"vol_24hrs\":\"336.0\",\"currency_full_form\":\"zilliqa\",\"currency_short_form\":\"ZIL\",\"baseCurrency\":\"true_usd\",\"per_change\":\"0\",\"trade_volume\":\"5.9808\"},\"BCHSV\":{\"highest_bid\":\"39\",\"lowest_ask\":\"104\",\"last_traded_price\":\"74\",\"min_24hrs\":\"74.0\",\"max_24hrs\":\"74.0\",\"vol_24hrs\":\"0.04\",\"currency_full_form\":\"bitcoin_cash_sv\",\"currency_short_form\":\"BCHSV\",\"baseCurrency\":\"true_usd\",\"per_change\":\"0\",\"trade_volume\":\"2.96\"},\"XLM\":{\"highest_bid\":\"0.055\",\"lowest_ask\":\"0.1473\",\"last_traded_price\":\"0.106\",\"min_24hrs\":\"0.106\",\"max_24hrs\":\"0.106\",\"vol_24hrs\":\"48.0\",\"currency_full_form\":\"stellar\",\"currency_short_form\":\"XLM\",\"baseCurrency\":\"true_usd\",\"per_change\":\"0\",\"trade_volume\":\"5.088\"},\"ZRX\":{\"highest_bid\":\"0.15\",\"lowest_ask\":\"0.42\",\"last_traded_price\":\"0.29\",\"min_24hrs\":\"0.29\",\"max_24hrs\":\"0.29\",\"vol_24hrs\":\"120.0\",\"currency_full_form\":\"zerox\",\"currency_short_form\":\"ZRX\",\"baseCurrency\":\"true_usd\",\"per_change\":\"0\",\"trade_volume\":\"34.8\"},\"BTT\":{\"highest_bid\":\"0.0009\",\"lowest_ask\":\"0.0009\",\"last_traded_price\":\"0.001\",\"min_24hrs\":\"0.001\",\"max_24hrs\":\"0.001\",\"vol_24hrs\":\"304.0\",\"currency_full_form\":\"bit_torrent\",\"currency_short_form\":\"BTT\",\"baseCurrency\":\"true_usd\",\"per_change\":\"0\",\"trade_volume\":\"0.304\"},\"USDT\":{\"highest_bid\":\"0.901\",\"lowest_ask\":\"0\",\"last_traded_price\":\"1.0042\",\"min_24hrs\":\"1.0042\",\"max_24hrs\":\"1.0042\",\"vol_24hrs\":\"10.0\",\"currency_full_form\":\"tether\",\"currency_short_form\":\"USDT\",\"baseCurrency\":\"true_usd\",\"per_change\":\"0\",\"trade_volume\":\"10.042\"}}}}";
+
+    String mockResponse = "{ \n" +
+            "\t\"stats\": {\n" +
+            "\t\t\"inr\": {\n" +
+            "\t\t\t\"ETH\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"9650.05\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"9843.97\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"9650.05\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"9650.05\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"9844.98\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"32.604\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"ether\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"ETH\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"-1.5097004787726445\",\n" +
+            "\t\t\t\t\"trade_volume\": \"177704.29611000002\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"BTC\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"283000\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"285200\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"283000\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"281500.0\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"285200.0\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"5.6168\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"bitcoin\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"BTC\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"-0.7017543859649122\",\n" +
+            "\t\t\t\t\"trade_volume\": \"989482.5539519999\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"LTC\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"4118.01\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"4240\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"4245\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"4103.0\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"4248.0\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"35.016\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"litecoin\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"LTC\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"2.907594071358952\",\n" +
+            "\t\t\t\t\"trade_volume\": \"148417.6682999999\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"XRP\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"22.21\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"22.34\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"22.35\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"22.1\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"22.44\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"78567.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"ripple\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"XRP\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"0.721045515998198\",\n" +
+            "\t\t\t\t\"trade_volume\": \"1467319.39\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"OMG\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"111.99\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"113.99\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"112\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"104.06\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"114.0\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"41.62\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"omisego\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"OMG\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"5.660377358490566\",\n" +
+            "\t\t\t\t\"trade_volume\": \"4602.58085\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"REQ\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"1.86\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"1.87\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"1.86\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"1.82\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"1.86\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"4636.031\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"request\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"REQ\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"2.1978021978021998\",\n" +
+            "\t\t\t\t\"trade_volume\": \"8599.41766\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"ZRX\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"18.7\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"19\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"18.7\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"18.7\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"18.73\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"68.337\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"zerox\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"ZRX\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"-0.16017084890550526\",\n" +
+            "\t\t\t\t\"trade_volume\": \"1279.16408\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"GNT\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"5.51\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"5.99\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"5.8\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"5.47\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"6.4\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"8922.753\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"golem\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"GNT\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"6.0329067641681915\",\n" +
+            "\t\t\t\t\"trade_volume\": \"52083.3622\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"BAT\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"13.1\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"13.85\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"13.81\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"13.25\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"13.81\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"2362.844\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"basic_attention_token\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"BAT\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"3.834586466165412\",\n" +
+            "\t\t\t\t\"trade_volume\": \"31497.789050000003\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"AE\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"32\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"34.4\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"34.4\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"31.58\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"34.4\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"3469.043\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"aeternity\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"AE\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"8.929702343255226\",\n" +
+            "\t\t\t\t\"trade_volume\": \"118332.15349999999\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"TRX\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"1.59\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"1.6\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"1.61\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"1.58\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"1.61\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"336147.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"tron\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"TRX\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"0.6250000000000006\",\n" +
+            "\t\t\t\t\"trade_volume\": \"535509.2600000001\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"XLM\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"7.8\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"7.96\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"7.96\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"7.65\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"8.22\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"13345.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"stellar\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"XLM\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"1.4012738853503226\",\n" +
+            "\t\t\t\t\"trade_volume\": \"103262.0899999999\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"NEO\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"642.02\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"675\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"675\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"674.0\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"675.0\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"20.346\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"neo\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"NEO\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"13733.250000000002\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"GAS\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"190.1\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"198.99\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"190.5\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"188.0\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"201.0\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"576.31\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"gas\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"GAS\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"1.3297872340425532\",\n" +
+            "\t\t\t\t\"trade_volume\": \"111233.70434\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"XRB\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"68.03\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"72.8\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"68.03\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"68.03\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"72.89\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"27.17\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"nano\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"XRB\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"-6.654774972557622\",\n" +
+            "\t\t\t\t\"trade_volume\": \"1975.4918799999998\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"NCASH\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"0.12\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"0.13\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"0.13\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"0.12\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"0.13\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"414485.2\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"nucleus_vision\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"NCASH\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"53792.96799999999\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"EOS\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"257.01\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"262\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"256.07\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"255.0\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"264.94\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"92.06\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"eos\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"EOS\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"23910.1717\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"CMT\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"2.3\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"2.55\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"2.55\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"2.42\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"2.55\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"5505.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"cyber_miles\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"CMT\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"5.371900826446277\",\n" +
+            "\t\t\t\t\"trade_volume\": \"13546.030000000002\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"ONT\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"85\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"97.99\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"99.99\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"79.62\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"99.99\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"1180.878\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"ontology\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"ONT\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"25.58402411454407\",\n" +
+            "\t\t\t\t\"trade_volume\": \"100469.46619\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"ZIL\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"1.31\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"1.33\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"1.33\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"1.27\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"1.33\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"7855.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"zilliqa\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"ZIL\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"4.724409448818902\",\n" +
+            "\t\t\t\t\"trade_volume\": \"10267.260000000002\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"IOST\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"0.56\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"0.61\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"0.6\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"0.53\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"0.64\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"1090970.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"ios_token\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"IOST\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"13.20754716981131\",\n" +
+            "\t\t\t\t\"trade_volume\": \"648788.32\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"ACT\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"0.79\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"0.81\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"0.79\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"0.77\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"0.84\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"26212.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"achain\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"ACT\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"-3.6585365853658436\",\n" +
+            "\t\t\t\t\"trade_volume\": \"21214.829999999998\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"ZCO\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"0.42\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"0.43\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"0.42\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"0.41\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"0.42\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"34922.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"zebi\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"ZCO\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"14449.939999999999\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"SNT\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"1.55\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"1.8\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"1.8\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"1.8\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"1.8\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"500.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"status\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"SNT\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"900.0\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"POLY\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"7.02\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"7.2\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"7.06\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"7.06\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"7.21\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"1258.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"polymath\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"POLY\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"-1.9444444444444522\",\n" +
+            "\t\t\t\t\"trade_volume\": \"9043.85\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"ELF\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"11.78\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"12.57\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"12.57\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"11.26\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"12.59\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"385.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"aelf\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"ELF\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"-0.15885623510722457\",\n" +
+            "\t\t\t\t\"trade_volume\": \"4660.33\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"REP\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"1005\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"1046.97\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"1010\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"1010.0\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"1010.0\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"0.5\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"augur\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"REP\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"505.0\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"QKC\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"2.5\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"2.59\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"2.59\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"2.59\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"2.61\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"3182.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"quarkchain\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"QKC\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"-0.7662835249042153\",\n" +
+            "\t\t\t\t\"trade_volume\": \"8266.48\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"XZC\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"458\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"495\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"495\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"455.0\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"495.0\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"43.98\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"zcoin\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"XZC\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"6.223175965665236\",\n" +
+            "\t\t\t\t\"trade_volume\": \"20295.3\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"BCHABC\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"10816\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"11200\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"11200\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"10802.0\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"11200.0\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"2.4164\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"bitcoin_cash_abc\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"BCHABC\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"3.6823912121767624\",\n" +
+            "\t\t\t\t\"trade_volume\": \"26778.274\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"TUSD\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"70.5\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"71.36\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"70.5\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"70.5\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"71.39\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"201.61\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"true_usd\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"TUSD\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"-0.704225352112676\",\n" +
+            "\t\t\t\t\"trade_volume\": \"14339.5377\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"BCHSV\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"4651\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"4800\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"4650\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"4650.0\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"4650.0\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"0.862\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"bitcoin_cash_sv\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"BCHSV\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"4008.2999999999997\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"BTT\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"0.05\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"0.06\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"0.06\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"0.05\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"0.06\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"541233.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"bit_torrent\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"BTT\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"inr\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"31778.729999999996\"\n" +
+            "\t\t\t}\n" +
+            "\t\t},\n" +
+            "\t\t\"true_usd\": {\n" +
+            "\t\t\t\"XRP\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"0.3116\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"0.3164\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"0.3164\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"0.3129\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"0.32\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"2610.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"ripple\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"XRP\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"true_usd\",\n" +
+            "\t\t\t\t\"per_change\": \"0.8606949314631929\",\n" +
+            "\t\t\t\t\"trade_volume\": \"821.4052000000001\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"TRX\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"0.0225\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"0.0227\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"0.0225\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"0.0224\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"0.0228\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"20119.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"tron\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"TRX\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"true_usd\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"454.42789999999997\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"BTC\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"4016.355\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"4043.3404\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"4016.6975\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"3965.1345\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"4028.207\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"0.2144\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"bitcoin\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"BTC\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"true_usd\",\n" +
+            "\t\t\t\t\"per_change\": \"-0.13697703773076975\",\n" +
+            "\t\t\t\t\"trade_volume\": \"855.3842745900001\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"ETH\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"137.5047\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"139.3052\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"137.5047\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"136.2451\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"140.69\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"4.022\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"ether\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"ETH\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"true_usd\",\n" +
+            "\t\t\t\t\"per_change\": \"-1.0009006810185204\",\n" +
+            "\t\t\t\t\"trade_volume\": \"552.9027689\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"NCASH\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"0.0014\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"0.0019\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"0.0019\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"0.0019\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"0.0019\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"910.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"nucleus_vision\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"NCASH\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"true_usd\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"1.729\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"BCHABC\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"65\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"177.88\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"127.88\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"127.88\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"127.88\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"0.009\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"bitcoin_cash_abc\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"BCHABC\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"true_usd\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"1.15092\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"LTC\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"40.1\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"65\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"61\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"61.0\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"61.0\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"1.1\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"litecoin\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"LTC\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"true_usd\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"67.1\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"ZIL\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"0.0102\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"0.0218\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"0.0178\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"0.0178\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"0.0178\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"336.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"zilliqa\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"ZIL\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"true_usd\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"5.9808\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"BCHSV\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"39\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"104\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"74\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"74.0\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"74.0\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"0.04\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"bitcoin_cash_sv\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"BCHSV\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"true_usd\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"2.96\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"XLM\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"0.055\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"0.1473\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"0.106\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"0.106\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"0.106\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"48.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"stellar\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"XLM\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"true_usd\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"5.088\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"ZRX\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"0.15\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"0.42\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"0.29\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"0.29\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"0.29\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"120.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"zerox\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"ZRX\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"true_usd\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"34.8\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"BTT\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"0.0009\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"0.001\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"0.001\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"0.001\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"0.001\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"304.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"bit_torrent\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"BTT\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"true_usd\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"0.304\"\n" +
+            "\t\t\t},\n" +
+            "\t\t\t\"USDT\": {\n" +
+            "\t\t\t\t\"highest_bid\": \"0.901\",\n" +
+            "\t\t\t\t\"lowest_ask\": \"0\",\n" +
+            "\t\t\t\t\"last_traded_price\": \"1.0042\",\n" +
+            "\t\t\t\t\"min_24hrs\": \"1.0042\",\n" +
+            "\t\t\t\t\"max_24hrs\": \"1.0042\",\n" +
+            "\t\t\t\t\"vol_24hrs\": \"10.0\",\n" +
+            "\t\t\t\t\"currency_full_form\": \"tether\",\n" +
+            "\t\t\t\t\"currency_short_form\": \"USDT\",\n" +
+            "\t\t\t\t\"baseCurrency\": \"true_usd\",\n" +
+            "\t\t\t\t\"per_change\": \"0\",\n" +
+            "\t\t\t\t\"trade_volume\": \"10.042\"\n" +
+            "\t\t\t}\n" +
+            "\t\t}\n" +
+            "\t}\n" +
+            "}";
 
 }

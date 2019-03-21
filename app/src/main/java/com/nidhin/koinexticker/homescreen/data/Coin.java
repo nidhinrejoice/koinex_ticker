@@ -2,11 +2,12 @@ package com.nidhin.koinexticker.homescreen.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Coin implements Parcelable {
+public class Coin implements Parcelable, Comparable<Coin> {
 
     @SerializedName("highest_bid")
     @Expose
@@ -180,4 +181,8 @@ public class Coin implements Parcelable {
         return 0;
     }
 
+    @Override
+    public int compareTo(@NonNull Coin coin) {
+        return Double.parseDouble(coin.getLastTradedPrice()) > Double.parseDouble(getLastTradedPrice()) ? 1 : -1;
+    }
 }
