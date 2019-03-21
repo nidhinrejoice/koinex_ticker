@@ -1,12 +1,14 @@
 package com.nidhin.koinexticker.homescreen.presentation;
 
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
@@ -65,6 +67,14 @@ public class MainActivity extends DaggerAppCompatActivity implements CoinListing
         viewModel.getBaseCurrencies().observe(this, this::setTabs);
         viewModel.getHeader().observe(this, this::setHeader);
         viewModel.getToast().observe(this, this::showToast);
+        viewModel.getError().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean aBoolean) {
+                if (Utils.checkInternetConnection(MainActivity.this)) {
+                    viewModel.onResume();
+                } else showNoInternetDialog(MainActivity.this);
+            }
+        });
         tvHeader.setVisibility(View.VISIBLE);
 
         mTabLayout.addOnTabSelectedListener(new TabLayout.BaseOnTabSelectedListener() {

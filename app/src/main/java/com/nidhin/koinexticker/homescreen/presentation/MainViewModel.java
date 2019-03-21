@@ -11,16 +11,13 @@ import com.nidhin.koinexticker.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
-import io.reactivex.schedulers.Schedulers;
 
 public class MainViewModel extends ViewModel {
     private FetchLatestPrices mFetchLatestPrices;
@@ -30,6 +27,7 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<String> toast;
     private MutableLiveData<String> header;
     private MutableLiveData<Boolean> sortBy;
+    private MutableLiveData<Boolean> error;
     private boolean sortByPrice;
     private List<CoinDetails> priceList;
     private List<Coin> coinList;
@@ -63,6 +61,11 @@ public class MainViewModel extends ViewModel {
         sortBy = new MutableLiveData<>();
         mBaseCurrencies = new MutableLiveData<>();
         header = new MutableLiveData<>();
+        error = new MutableLiveData<>();
+    }
+
+    public MutableLiveData<Boolean> getError() {
+        return error;
     }
 
     public MutableLiveData<String> getHeader() {
@@ -97,7 +100,7 @@ public class MainViewModel extends ViewModel {
                 priceList = new ArrayList<>();
                 pDialog.setValue("");
                 toast.setValue(Utils.getException(e));
-                onResume();
+               error.setValue(true);
             }
         }, null);
     }
