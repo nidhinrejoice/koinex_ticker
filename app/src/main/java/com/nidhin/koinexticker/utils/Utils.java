@@ -83,6 +83,13 @@ public class Utils {
         df.setMaximumFractionDigits(4);
         return df.format(amount);
     }
+    public static String formatAmountMaxTwoDecimals(double amount) {
+        DecimalFormat df = new DecimalFormat("#,##,##,###.#");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        df.setMinimumFractionDigits(2);
+        df.setMaximumFractionDigits(2);
+        return df.format(amount);
+    }
 
     public static boolean checkInternetConnection(Context context) {
         ConnectivityManager connectivityManager
@@ -138,6 +145,6 @@ public class Utils {
         Double askVal=Double.valueOf(coin.getLowestAsk());
         Double currentVal=Double.parseDouble(coin.getLastTradedPrice());
         Double spreadVal=(askVal-bidVal)/currentVal*100;
-        return formatAmount(spreadVal);
+        return formatAmountMaxTwoDecimals(spreadVal);
     }
 }
